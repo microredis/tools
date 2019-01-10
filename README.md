@@ -20,7 +20,7 @@ func (i *Info) UnmarshalBinary(data []byte) error {
 func (m *Migrator) waitForUp() {
 	info := new(Info)
 	for {
-		if err := m.to.Info().Scan(info); err != nil {
+		if err := m.redisClient.Info().Scan(info); err != nil {
 			panic(err)
 		}
 		if info.MasterLinkStatus == "up" {
