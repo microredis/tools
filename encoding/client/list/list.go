@@ -1,60 +1,69 @@
 package list
 
 import (
-	"strings"
+	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
-type Client struct {
-
-}
-
-func Unmarshal(data []byte, v interface{}) {
-	list := make(map[string]interface{})
-	for _, line := range strings.Split(string(data), "\r\n") {
-
-		for _, item := range strings.Split(client, " ") {
-			kv := strings.SplitN(item, "=", 2)
-			result[kv[0]] = getClientValue(kv[1])
-		}
-	}
-
-	result := make(map[string]interface{})
-
-	return result
-
+func Unmarshal(data []byte, v interface{}) error {
 	rv := reflect.ValueOf(v)
-	if rv.Kind() != reflect.Ptr || rv.IsNil() {
-		return errors.New("invalid type of v")
+
+	if rv.Kind() != reflect.Ptr {
+		return fmt.Errorf("non-pointer %v", rv.Type())
 	}
-	if !rv.IsValid() {
-		return errors.New("")
+
+	rv = rv.Elem()
+
+	if rv.Kind() != reflect.Slice {
+		return fmt.Errorf("invalid type of v %s", rv.Kind())
 	}
-	for i := 0; i < rv.Elem().NumField(); i++ {
-		field := rv.Type().Elem().Field(i)
+	clients := strings.Split(string(data), "\r\n")
 
-		tag := field.Tag.Get("info")
+	rv.Set(reflect.MakeSlice(rv.Type(), len(clients), len(clients)))
+	rv.SetCap(len(clients))
+	rv.SetLen(len(clients))
 
-		key := info[tag]
+	for i, line := range clients {
+		client := rv.Index(i)
 
-		switch field.Type.Kind() {
-		case reflect.Int64:
-			result, err := strconv.ParseInt(key, 10, 64)
-			if err != nil {
-				return err
+		details := strings.Split(line, " ")
+
+		options := make(map[string]string, len(details))
+
+		for _, item := range details {
+			kv := strings.SplitN(item, "=", 2)
+			options[kv[0]] = kv[1]
+		}
+
+		for i := 0; i < client.NumField(); i++ {
+
+			field := client.Type().Field(i)
+
+			tag := field.Tag.Get("client_list")
+
+			value := options[tag]
+
+			switch field.Type.Kind() {
+			case reflect.Int64:
+				result, err := strconv.ParseInt(value, 10, 64)
+				if err != nil {
+					return err
+				}
+				client.Field(i).SetInt(result)
+			case reflect.String:
+				client.Field(i).SetString(value)
+			case reflect.Float64:
+				reflect.TypeOf(new(int))
+				result, err := strconv.ParseFloat(value, 64)
+				if err != nil {
+					return err
+				}
+				client.Field(i).SetFloat(result)
 			}
-			rv.Elem().Field(i).SetInt(result)
-		case reflect.String:
-			rv.Elem().Field(i).SetString(key)
-		case reflect.Float64:
-			reflect.TypeOf(new(int))
-			result, err := strconv.ParseFloat(key, 64)
-			if err != nil {
-				return err
-			}
-			rv.Elem().Field(i).SetFloat(result)
 		}
 	}
+
 	return nil
 }
