@@ -7,6 +7,7 @@ import (
 
 type MyStruct struct {
 	RedisVersion string `info:"redis_version"`
+	Keyspace map[string]map[string]int64 `info:",keyspace"`
 }
 
 func TestUnmarshal(t *testing.T) {
@@ -17,6 +18,18 @@ func TestUnmarshal(t *testing.T) {
 	}
 	if myStruct.RedisVersion != "999.999.999" {
 		t.Fatal("redis version mismatch with ", myStruct.RedisVersion)
+	}
+	if myStruct.Keyspace["db0"] == nil {
+		t.Fatal("keyspace is not parsed")
+	}
+	if myStruct.Keyspace["db0"]["keys"] != 2528768 {
+		t.Fatal("keyspace is not parsed")
+	}
+	if myStruct.Keyspace["db0"]["expires"] != 1420 {
+		t.Fatal("keyspace is not parsed")
+	}
+	if myStruct.Keyspace["db0"]["avg_ttl"] != 107761233218 {
+		t.Fatal("keyspace is not parsed")
 	}
 }
 

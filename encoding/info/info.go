@@ -29,6 +29,17 @@ func fillObjectFields(info map[string]string, v reflect.Value) error {
 
 		tag := field.Tag.Get("info")
 
+		if tag == "" {
+			continue
+		}
+
+		if result := strings.Split(tag, ","); len(result) == 2 && result[1] == "keyspace" {
+			if err := parseKeySpace(info, v.Elem().Field(i)); err != nil {
+				return err
+			}
+			continue
+		}
+
 		value := info[tag]
 
 		switch field.Type.Kind() {
@@ -49,6 +60,27 @@ func fillObjectFields(info map[string]string, v reflect.Value) error {
 			v.Elem().Field(i).SetFloat(result)
 		}
 	}
+	return nil
+}
+
+func parseKeySpace(info map[string]string, v reflect.Value) error {
+	keyspace := make(map[string]map[string]int64)
+
+	for key, value := range info {
+		if strings.HasPrefix(key, "db") {
+			keyspace[key] = make(map[string]int64)
+			for _, item := range strings.Split(value, ",") {
+				result := strings.Split(item, "=")
+				metric, err := strconv.ParseInt(result[1], 10, 64)
+				if err != nil {
+					return err
+				}
+				keyspace[key][result[0]] = metric
+			}
+		}
+	}
+
+	v.Set(reflect.ValueOf(keyspace))
 	return nil
 }
 
