@@ -15,7 +15,7 @@ func Unmarshal(data []byte, v interface{}) error {
 	}
 
 	if !rv.IsValid() {
-		return errors.New("")
+		return errors.New("invalid")
 	}
 
 	info := parseInfo(string(data))
@@ -24,7 +24,7 @@ func Unmarshal(data []byte, v interface{}) error {
 }
 
 func fillObjectFields(info map[string]string, v reflect.Value) error {
-	for i := 0; i < v.Elem().NumField(); i++ {
+	for i := 0; i < v.Elem().NumField(); i += 1 {
 		field := v.Elem().Type().Field(i)
 
 		tag := field.Tag.Get("info")
