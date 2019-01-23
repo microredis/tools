@@ -63,7 +63,7 @@ func parseConfig(data string) map[string]string {
 			continue
 		}
 		if kv := strings.SplitN(i, " ", 2); len(kv) == 2 {
-			result[kv[0]] = kv[1]
+			result[kv[0]] = strings.TrimSpace(kv[1])
 		}
 	}
 
