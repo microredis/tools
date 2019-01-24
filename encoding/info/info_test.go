@@ -1,13 +1,13 @@
 package info
 
 import (
-	"testing"
 	"strings"
+	"testing"
 )
 
 type MyStruct struct {
-	RedisVersion string `info:"redis_version"`
-	Keyspace map[string]map[string]int64 `info:",keyspace"`
+	RedisVersion string                      `info:"redis_version"`
+	Keyspace     map[string]map[string]int64 `info:",keyspace"`
 }
 
 func TestUnmarshal(t *testing.T) {
