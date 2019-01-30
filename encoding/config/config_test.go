@@ -4,16 +4,9 @@ import (
 	"testing"
 )
 
-type Config struct {
-	Appendonly string `config:"appendonly"`
-}
-
 func TestUnmarshal(t *testing.T) {
-	config := new(Config)
-	if err := Unmarshal([]byte(data), config); err != nil {
-		t.Fatal(err.Error())
-	}
-	if config.Appendonly != "no" {
+	config := New([]byte(data))
+	if config.Requirepass != "foobared" {
 		t.Fatal("expected field doesn't exists")
 	}
 }
@@ -524,7 +517,7 @@ replica-priority 100
 # 150k passwords per second against a good box. This means that you should
 # use a very strong password otherwise it will be very easy to break.
 #
-# requirepass foobared
+requirepass foobared
 
 # Command renaming.
 #
