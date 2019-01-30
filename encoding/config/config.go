@@ -1,71 +1,32 @@
 package config
 
 import (
-	"errors"
-	"reflect"
-	"strconv"
 	"strings"
 )
 
-func Unmarshal(data []byte, v interface{}) error {
-	rv := reflect.ValueOf(v)
-
-	if rv.Kind() != reflect.Ptr || rv.IsNil() {
-		return errors.New("invalid type of v")
-	}
-
-	if !rv.IsValid() {
-		return errors.New("invalid")
-	}
-	input := string(data)
-	config := parseConfig(input)
-
-	return fillObjectFields(config, rv)
+type Configuration struct {
+	Requirepass   string
+	RenameCommand map[string]string
 }
 
-func fillObjectFields(config map[string]string, v reflect.Value) error {
-	for i := 0; i < v.Elem().NumField(); i += 1 {
-		field := v.Elem().Type().Field(i)
-
-		tag := field.Tag.Get("config")
-
-		if tag == "" {
+func New(data []byte) Configuration {
+	c := Configuration{
+		RenameCommand: make(map[string]string),
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		if strings.HasPrefix(line, "#") || strings.TrimSpace(line) == "" {
 			continue
 		}
-
-		value := config[tag]
-
-		switch field.Type.Kind() {
-		case reflect.Int64:
-			result, err := strconv.ParseInt(value, 10, 64)
-			if err != nil {
-				return err
-			}
-			v.Elem().Field(i).SetInt(result)
-		case reflect.String:
-			v.Elem().Field(i).SetString(value)
-		case reflect.Float64:
-			result, err := strconv.ParseFloat(value, 64)
-			if err != nil {
-				return err
-			}
-			v.Elem().Field(i).SetFloat(result)
+		var (
+			argv    = strings.Split(line, " ")
+			argc    = len(argv)
+			command = argv[0]
+		)
+		if strings.EqualFold(command, "requirepass") && argc == 2 {
+			c.Requirepass = argv[1]
+		} else if strings.EqualFold(command, "rename-command") && argc == 3 {
+			c.RenameCommand[argv[1]] = argv[2]
 		}
 	}
-	return nil
-}
-
-func parseConfig(data string) map[string]string {
-	result := make(map[string]string)
-
-	for _, i := range strings.Split(data, "\n") {
-		if strings.HasPrefix(i, "#") || strings.TrimSpace(i) == "" {
-			continue
-		}
-		if kv := strings.SplitN(i, " ", 2); len(kv) == 2 {
-			result[kv[0]] = strings.TrimSpace(kv[1])
-		}
-	}
-
-	return result
+	return c
 }
