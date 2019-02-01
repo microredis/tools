@@ -1,25 +1,31 @@
 package closer
 
-import "io"
+import (
+	"io"
+	"log"
+)
 
-func MustClose(list ...io.Closer) {
-	for _, r := range list {
-		if err := r.Close(); err != nil {
-			panic(err)
+func MustClose(resources ...io.Closer) {
+	for index, resource := range resources {
+		if err := resource.Close(); err != nil {
+			log.Fatalf("failed to close resource with index %d and error %v\n", index, err)
 		}
 	}
 }
 
-func TryClose(list ...io.Closer) {
-	var err error
-	for _, r := range list {
-		err = r.Close()
+func TryClose(resources ...io.Closer) {
+	for index, resource := range resources {
+		if err := resource.Close(); err != nil {
+			log.Printf("failed to close resource with index %d and error %v\n", index, err)
+		}
 	}
-	panic(err)
+	log.Fatalf("failed to close")
 }
 
-func MayClose(list ...io.Closer) {
-	for _, r := range list {
-		_ = r.Close()
+func MayClose(resources ...io.Closer) {
+	for index, resource := range resources {
+		if err := resource.Close(); err != nil {
+			log.Printf("failed to close resource with index %d and error %v\n", index, err)
+		}
 	}
 }
