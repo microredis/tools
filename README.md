@@ -3,7 +3,7 @@
 
 Tools for Redis client in go.
 Allows you to parse info into or client list valid go structures of client list into golang slice.
-Supports ```int64``` and ```string``` as well as ```map[string]map[string]int``` for Keyspace section of info command.
+Supports ```int64``` and ```string``` as well as ```map[string]map[string]int``` for Keyspace section of info command and more.
 
 ```go
 package main
