@@ -1,5 +1,5 @@
 # Tools
-[![Maintainability](https://api.codeclimate.com/v1/badges/158f8ef3eedf42d72c5b/maintainability)](https://codeclimate.com/github/microredis/tools/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/158f8ef3eedf42d72c5b/maintainability)](https://codeclimate.com/github/microredis/tools/maintainability) [![Build Status](https://travis-ci.org/microredis/tools.svg?branch=master)](https://travis-ci.org/microredis/tools)
 
 Tools for Redis client in go.
 Allows you to parse info into or client list valid go structures of client list into golang slice.
