@@ -8,6 +8,7 @@ import (
 type MyStruct struct {
 	RedisVersion string                      `info:"redis_version"`
 	Keyspace     map[string]map[string]int64 `info:",keyspace"`
+	CmdstatLlen  map[string]string           `info:"cmdstat_llen"`
 }
 
 func TestUnmarshal(t *testing.T) {
@@ -30,6 +31,15 @@ func TestUnmarshal(t *testing.T) {
 	}
 	if myStruct.Keyspace["db0"]["avg_ttl"] != 107761233218 {
 		t.Fatal("keyspace is not parsed")
+	}
+	if myStruct.CmdstatLlen["calls"] != "5" {
+		t.Fatal("CmdstatLlen is not parsed")
+	}
+	if myStruct.CmdstatLlen["usec"] != "8" {
+		t.Fatal("CmdstatLlen is not parsed")
+	}
+	if myStruct.CmdstatLlen["usec_per_call"] != "1.60" {
+		t.Fatal("CmdstatLlen is not parsed")
 	}
 }
 
@@ -161,6 +171,27 @@ used_cpu_user_children:0.00
 
 # Cluster
 cluster_enabled:0
+
+# Commandstats
+cmdstat_llen:calls=5,usec=8,usec_per_call=1.60
+cmdstat_slowlog:calls=923,usec=2097,usec_per_call=2.27
+cmdstat_set:calls=2,usec=9,usec_per_call=4.50
+cmdstat_strlen:calls=25,usec=49,usec_per_call=1.96
+cmdstat_command:calls=1,usec=4474,usec_per_call=4474.00
+cmdstat_type:calls=273,usec=759,usec_per_call=2.78
+cmdstat_auth:calls=275,usec=734,usec_per_call=2.67
+cmdstat_info:calls=1848,usec=72492,usec_per_call=39.23
+cmdstat_select:calls=6,usec=17,usec_per_call=2.83
+cmdstat_xinfo:calls=7,usec=95,usec_per_call=13.57
+cmdstat_lrange:calls=3,usec=633,usec_per_call=211.00
+cmdstat_config:calls=923,usec=52759,usec_per_call=57.16
+cmdstat_xlen:calls=239,usec=465,usec_per_call=1.95
+cmdstat_scan:calls=9,usec=63,usec_per_call=7.00
+cmdstat_lpush:calls=1,usec=939,usec_per_call=939.00
+cmdstat_get:calls=1,usec=9,usec_per_call=9.00
+cmdstat_client:calls=262,usec=355,usec_per_call=1.35
+cmdstat_xadd:calls=28,usec=3957,usec_per_call=141.32
+cmdstat_ping:calls=927,usec=548,usec_per_call=0.59
 
 # Keyspace
 db0:keys=2528768,expires=1420,avg_ttl=107761233218`
