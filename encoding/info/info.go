@@ -34,10 +34,7 @@ func fillObjectFields(info map[string]string, v reflect.Value) error {
 		}
 		value := info[tag]
 		if strings.HasPrefix(tag, "cmdstat") {
-			if err := parseCommandStat(value, v.Elem().Field(i)); err != nil {
-				return err
-			}
-			continue
+			parseCommandStat(value, v.Elem().Field(i))
 		}
 		switch field.Type.Kind() {
 		case reflect.Int64, reflect.Int:
@@ -60,7 +57,7 @@ func fillObjectFields(info map[string]string, v reflect.Value) error {
 	return nil
 }
 
-func parseCommandStat(cmdstat string, v reflect.Value) error {
+func parseCommandStat(cmdstat string, v reflect.Value) {
 	cmdstats := make(map[string]string)
 	for _, line := range strings.Split(cmdstat, ",") {
 		if len(line) != 0 {
@@ -69,7 +66,6 @@ func parseCommandStat(cmdstat string, v reflect.Value) error {
 		}
 	}
 	v.Set(reflect.ValueOf(cmdstats))
-	return nil
 }
 
 func parseKeySpace(info map[string]string, v reflect.Value) error {
