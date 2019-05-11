@@ -9,6 +9,7 @@ type MyStruct struct {
 	RedisVersion string                      `info:"redis_version"`
 	Keyspace     map[string]map[string]int64 `info:",keyspace"`
 	CmdstatLlen  map[string]string           `info:"cmdstat_llen"`
+	Cmdstatxshit map[string]string           `info:"cmdstat_not_exists"`
 }
 
 func TestUnmarshal(t *testing.T) {
@@ -39,6 +40,9 @@ func TestUnmarshal(t *testing.T) {
 		t.Fatal("CmdstatLlen is not parsed")
 	}
 	if myStruct.CmdstatLlen["usec_per_call"] != "1.60" {
+		t.Fatal("CmdstatLlen is not parsed")
+	}
+	if len(myStruct.Cmdstatxshit) > 0 {
 		t.Fatal("CmdstatLlen is not parsed")
 	}
 }

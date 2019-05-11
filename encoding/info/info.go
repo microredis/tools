@@ -62,9 +62,11 @@ func fillObjectFields(info map[string]string, v reflect.Value) error {
 
 func parseCommandStat(cmdstat string, v reflect.Value) error {
 	cmdstats := make(map[string]string)
-	for _, value := range strings.Split(cmdstat, ",") {
-		result := strings.Split(value, "=")
-		cmdstats[result[0]] = result[1]
+	for _, line := range strings.Split(cmdstat, ",") {
+		if len(line) != 0 {
+			result := strings.Split(line, "=")
+			cmdstats[result[0]] = result[1]
+		}
 	}
 	v.Set(reflect.ValueOf(cmdstats))
 	return nil
