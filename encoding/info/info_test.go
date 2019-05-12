@@ -5,9 +5,15 @@ import (
 	"testing"
 )
 
+type MyStruct struct {
+	RedisVersion string                        `info:"redis_version"`
+	Keyspace     map[string]map[string]int64   `info:"keyspace"`
+	Cmdstats     map[string]map[string]float64 `info:"cmdstats"`
+}
+
 func TestUnmarshal(t *testing.T) {
 	data := strings.Join(strings.Split(data, "\n"), "\r\n")
-	myStruct := new(Info)
+	myStruct := new(MyStruct)
 	if err := Unmarshal([]byte(data), myStruct); err != nil {
 		t.Fatal("failed", err.Error())
 	}
@@ -17,25 +23,22 @@ func TestUnmarshal(t *testing.T) {
 	if myStruct.Keyspace["db0"] == nil {
 		t.Fatal("keyspace is not parsed")
 	}
-	if myStruct.Keyspace["db0"].Keys != 2528768 {
+	if myStruct.Keyspace["db0"]["keys"] != 2528768 {
 		t.Fatal("keyspace is not parsed")
 	}
-	if myStruct.Keyspace["db0"].Expires != 1420 {
+	if myStruct.Keyspace["db0"]["expires"] != 1420 {
 		t.Fatal("keyspace is not parsed")
 	}
-	if myStruct.Keyspace["db0"].AvgTTL != 107761233218 {
+	if myStruct.Keyspace["db0"]["avg_ttl"] != 107761233218 {
 		t.Fatal("keyspace is not parsed")
 	}
-	if myStruct.Cmdstats["cmdstat_llen"] == nil {
+	if myStruct.Cmdstats["cmdstat_llen"]["calls"] != 5 {
 		t.Fatal("CmdstatLlen is not parsed")
 	}
-	if myStruct.Cmdstats["cmdstat_llen"].Calls != 5 {
+	if myStruct.Cmdstats["cmdstat_llen"]["usec"] != 8 {
 		t.Fatal("CmdstatLlen is not parsed")
 	}
-	if myStruct.Cmdstats["cmdstat_llen"].Usec != 8 {
-		t.Fatal("CmdstatLlen is not parsed")
-	}
-	if myStruct.Cmdstats["cmdstat_llen"].UsecPerCall != 1.60 {
+	if myStruct.Cmdstats["cmdstat_llen"]["usec_per_call"] != 1.60 {
 		t.Fatal("CmdstatLlen is not parsed")
 	}
 }
