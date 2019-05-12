@@ -6,9 +6,9 @@ import (
 )
 
 type Client struct {
-	Id   int64  `json:"id,string"`
-	Name string `json:"name"`
-	Age  int64  `json:"age,string"`
+	Id   int64  `client_list:"id"`
+	Name string `client_list:"name"`
+	Age  int64  `client_list:"age"`
 }
 
 func TestUnmarshal(t *testing.T) {
