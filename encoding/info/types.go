@@ -37,3 +37,7 @@ type Info struct {
 	Keyspace map[string]*DB      `json:"keyspace"`
 	Cmdstats map[string]*Cmdstat `json:"cmdstats"`
 }
+
+func (i *Info) UnmarshalBinary(data []byte) error {
+	return Unmarshal(data, i)
+}
