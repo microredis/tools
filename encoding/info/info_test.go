@@ -14,33 +14,41 @@ type MyStruct struct {
 func TestUnmarshal(t *testing.T) {
 	data := strings.Join(strings.Split(data, "\n"), "\r\n")
 	myStruct := new(MyStruct)
+
 	if err := Unmarshal([]byte(data), myStruct); err != nil {
 		t.Fatal("failed", err.Error())
 	}
-	if myStruct.RedisVersion != "999.999.999" {
-		t.Fatal("redis version mismatch with ", myStruct.RedisVersion)
-	}
-	if myStruct.Keyspace["db0"] == nil {
-		t.Fatal("keyspace is not parsed")
-	}
-	if myStruct.Keyspace["db0"]["keys"] != 2528768 {
-		t.Fatal("keyspace is not parsed")
-	}
-	if myStruct.Keyspace["db0"]["expires"] != 1420 {
-		t.Fatal("keyspace is not parsed")
-	}
-	if myStruct.Keyspace["db0"]["avg_ttl"] != 107761233218 {
-		t.Fatal("keyspace is not parsed")
-	}
-	if myStruct.Cmdstats["cmdstat_llen"]["calls"] != 5 {
-		t.Fatal("CmdstatLlen is not parsed")
-	}
-	if myStruct.Cmdstats["cmdstat_llen"]["usec"] != 8 {
-		t.Fatal("CmdstatLlen is not parsed")
-	}
-	if myStruct.Cmdstats["cmdstat_llen"]["usec_per_call"] != 1.60 {
-		t.Fatal("CmdstatLlen is not parsed")
-	}
+
+	t.Run("Test version", func(t *testing.T) {
+		if myStruct.RedisVersion != "999.999.999" {
+			t.Fatal("redis version mismatch with ", myStruct.RedisVersion)
+		}
+	})
+	t.Run("Test keyspace", func(t *testing.T) {
+		if myStruct.Keyspace["db0"] == nil {
+			t.Fatal("keyspace is not parsed")
+		}
+		if myStruct.Keyspace["db0"]["keys"] != 2528768 {
+			t.Fatal("keyspace is not parsed")
+		}
+		if myStruct.Keyspace["db0"]["expires"] != 1420 {
+			t.Fatal("keyspace is not parsed")
+		}
+		if myStruct.Keyspace["db0"]["avg_ttl"] != 107761233218 {
+			t.Fatal("keyspace is not parsed")
+		}
+	})
+	t.Run("Test cmdstats", func(t *testing.T) {
+		if myStruct.Cmdstats["cmdstat_llen"]["calls"] != 5 {
+			t.Fatal("CmdstatLlen is not parsed")
+		}
+		if myStruct.Cmdstats["cmdstat_llen"]["usec"] != 8 {
+			t.Fatal("CmdstatLlen is not parsed")
+		}
+		if myStruct.Cmdstats["cmdstat_llen"]["usec_per_call"] != 1.60 {
+			t.Fatal("CmdstatLlen is not parsed")
+		}
+	})
 }
 
 const data = `
